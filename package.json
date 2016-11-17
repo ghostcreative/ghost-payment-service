@@ -1,0 +1,37 @@
+{
+  "name": "ghost-payment-service",
+  "version": "1.0.0",
+  "description": "nodejs client to interact with the authorize.net & stripe apis",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ./test --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ghostcreative/ghost-payment-service.git"
+  },
+  "keywords": [
+    "ghost creative",
+    "stripe",
+    "authorize.net",
+    "nodejs"
+  ],
+  "author": "Nick Gerner",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ghostcreative/ghost-payment-service/issues"
+  },
+  "homepage": "https://github.com/ghostcreative/ghost-payment-service#readme",
+  "dependencies": {
+    "auth-net-cim": "^2.4.0",
+    "auth-net-types": "^1.2.2",
+    "authorize-net": "git+https://github.com/ghostcreative/node-authorize-net.git",
+    "bluebird": "^3.4.6",
+    "lodash": "^4.17.2",
+    "stripe": "^4.9.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2"
+  }
+}
