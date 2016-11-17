@@ -14,9 +14,9 @@ let token;
 let service;
 
 describe('GhostPaymentService', function () {
+  this.timeout(5000);
 
   describe('StripeService', () => {
-    
   
     before(() => {
       cardData = stripeSetup.generateCard();

@@ -1,1 +1,1 @@
-require('./lib/GhostPaymentService');
+module.exports = require('./lib/GhostPaymentServiceFactory');
