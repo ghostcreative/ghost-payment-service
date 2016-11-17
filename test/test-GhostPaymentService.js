@@ -7,8 +7,8 @@ const authorizeNetSetup = require('./helpers/authorizeNetSetup');
 
 const GhostPaymentService = require('../index');
 
+const cardData = stripeSetup.generateCard();
 let card;
-let cardData;
 let customer;
 let token;
 let service;
@@ -19,7 +19,6 @@ describe('GhostPaymentService', function () {
   describe('StripeService', () => {
   
     before(() => {
-      cardData = stripeSetup.generateCard();
       return stripeSetup.setupCustomer()
       .tap(_customer_ => customer = _customer_)
       .then(_customer_ => stripeSetup.setupCard({ customerId: _customer_.id }))
@@ -125,6 +124,58 @@ describe('GhostPaymentService', function () {
           expect(confirmation).to.exist;
         })
       });
+    });
+    
+  });
+  
+  describe('AuthorizeNetService', () => {
+    
+    describe('cards', () => {
+      
+      it('should create a card', () => {
+        
+      });
+  
+      it('should get a customers card', () => {
+    
+      });
+  
+      it('should list a customers cards', () => {
+    
+      });
+  
+      it('should delete a card', () => {
+    
+      });
+      
+    });
+  
+    describe('charges', () => {
+    
+      it('should create a charge', () => {
+        
+      });
+      
+    });
+  
+    describe('customers', () => {
+  
+      it('should create a customer', () => {
+    
+      });
+  
+      it('should get a customer', () => {
+    
+      });
+  
+      it('should update a customer', () => {
+    
+      });
+  
+      it('should delete a customer', () => {
+    
+      });
+      
     });
     
   });
