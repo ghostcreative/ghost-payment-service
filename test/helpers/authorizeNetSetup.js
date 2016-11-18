@@ -80,6 +80,7 @@ class authorizeNetSetup {
   
   static setupCustomer (data = {}) {
     return new Promise((resolve, reject) => {
+      data.id = data.id || Chance.integer({ min: 1000, max: 1000000 });
       const Customer = new Types.CustomerBasic({
         merchantCustomerId: data.id,
         description: 'Id: ' + data.id,
