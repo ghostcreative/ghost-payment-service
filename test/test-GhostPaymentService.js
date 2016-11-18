@@ -1,5 +1,6 @@
 const Chai = require('chai');
 const expect = Chai.expect;
+const Chance = require('chance').Chance();
 const Config = require('config');
 const _ = require('lodash');
 const stripeSetup = require('./helpers/stripeSetup');
@@ -129,15 +130,53 @@ describe('GhostPaymentService', function () {
   });
   
   describe('AuthorizeNetService', () => {
+  
+    before(() => {
+      return authorizeNetSetup.setupCustomer({ id: Chance.integer({ min: 1000, max: 1000000 }) })
+      .tap(_customer_ => customer = _customer_)
+      .then(customer => authorizeNetSetup.setupCard({
+        customerId: customer.customerProfileId,
+        card: authorizeNetSetup.generateCard(),
+        billingAddress: authorizeNetSetup.generateAddress()
+      }))
+      .tap(_card_ => card = _card_)
+      .then(() => authorizeNetSetup.getCustomer({ customerId: customer.customerProfileId }))
+      .then(_customer_ => customer = _customer_)
+      .then(() => service = new GhostPaymentService({
+        processor: 'authorizeNet',
+        authorizeNet: Config.get('authorizeNet')
+      }))
+    });
     
     describe('cards', () => {
       
       it('should create a card', () => {
-        
+        return service.createCard({
+          card: cardData,
+          customerId: customer.customerProfileId,
+          billingAddress: authorizeNetSetup.generateAddress()
+        })
+        .then(_card_ => {
+          expect(_card_).to.exist;
+          expect(_card_.customerType).to.be.equal('business');
+          expect(_card_.billTo).to.exist;
+          expect(_card_.customerProfileId).to.be.equal(customer.customerProfileId);
+          expect(_card_.customerPaymentProfileId).to.be.exist;
+        })
       });
   
       it('should get a customers card', () => {
-    
+        return service.getCard({
+          cardId: customer.paymentProfiles.customerPaymentProfileId,
+          customerId: customer.customerProfileId
+        })
+        .then(_card_ => {
+          expect(_card_).to.exist;
+          expect(_card_.customerType).to.be.equal('business');
+          expect(_card_.billTo).to.exist;
+          expect(_card_.customerProfileId).to.be.equal(customer.customerProfileId);
+          expect(_card_.customerPaymentProfileId).to.be.equal(customer.paymentProfiles.customerPaymentProfileId);
+        })
       });
   
       it('should list a customers cards', () => {
