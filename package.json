@@ -1,6 +1,6 @@
 {
   "name": "ghost-payment-service",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "nodejs client to interact with the authorize.net & stripe apis",
   "main": "index.js",
   "scripts": {
