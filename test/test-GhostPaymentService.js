@@ -203,7 +203,53 @@ describe('GhostPaymentService', function () {
     describe('charges', () => {
     
       it('should create a charge', () => {
-        
+
+        return service.createCharge({
+          amount: Chance.integer({ min: 100, max: 1000000 }),
+          customerId: customer.customerProfileId,
+          cardId: customer.paymentProfiles.customerPaymentProfileId
+        })
+        .then(charge => {
+          expect(charge).to.exist;
+          expect(charge.transId).to.exist;
+        })
+
+      });
+
+      it('should return an error when an incorrect customerId is provided', () => {
+
+        return service.createCharge({
+          amount: Chance.integer({ min: 100, max: 1000000 }),
+          customerId: 'fakecustomerid',
+          cardId: customer.paymentProfiles.customerPaymentProfileId
+        })
+        .then(charge => expect(charge).to.not.exist)
+        .catch(err => expect(err).to.exist)
+
+      });
+
+      it('should return an error when an incorrect amount is provided', () => {
+
+        return service.createCharge({
+          amount: -10000,
+          customerId: customer.customerProfileId,
+          cardId: customer.paymentProfiles.customerPaymentProfileId
+        })
+        .then(charge => expect(charge).to.not.exist)
+        .catch(err => expect(err).to.exist)
+
+      });
+
+      it('should return an error when an incorrect cardId is provided', () => {
+
+        return service.createCharge({
+          amount: 10000,
+          customerId: customer.customerProfileId,
+          cardId: 'nocard'
+        })
+        .then(charge => expect(charge).to.not.exist)
+        .catch(err => expect(err).to.exist)
+
       });
       
     });
