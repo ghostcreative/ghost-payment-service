@@ -11,6 +11,7 @@ const GhostPaymentService = require('../index');
 const cardData = stripeSetup.generateCard();
 let card;
 let customer;
+let transaction;
 let token;
 let service;
 
@@ -146,6 +147,12 @@ describe('GhostPaymentService', function () {
         processor: 'authorizeNet',
         authorizeNet: Config.get('authorizeNet')
       }))
+      .then(() => service.createCharge({
+        amount: 100,
+        customerId: customer.customerProfileId,
+        cardId: customer.paymentProfiles.customerPaymentProfileId
+      }))
+      .then(_transaction_ => transaction = _transaction_)
     });
     
     describe('cards', () => {
@@ -198,6 +205,20 @@ describe('GhostPaymentService', function () {
         // TODO
       });
       
+    });
+    describe('refundTransaction', () => {
+
+      it('should get a customers card', () => {
+        return service.refundTransaction({
+          paymentId: transaction.transId,
+          amount: 100,
+          createdAt: transaction.createdAt - 10
+        })
+        .then(_refund_ => {
+          console.log("_refund_ ", _refund_);
+        })
+      });
+
     });
   
     describe('charges', () => {
