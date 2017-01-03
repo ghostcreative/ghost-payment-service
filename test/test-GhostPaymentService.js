@@ -23,6 +23,8 @@ describe('GhostPaymentService', function () {
       return stripeSetup.setupCustomer()
       .tap(_customer_ => customer = _customer_)
       .then(_customer_ => stripeSetup.setupCard({ customerId: _customer_.id }))
+      .then(() => stripeSetup.setupCard({ customerId: customer.id }))
+      .then(() => stripeSetup.setupCard({ customerId: customer.id }))
       .tap(_card_ => card = _card_)
       .then(_card_ => stripeSetup.setupToken())
       .tap(_token_ => token = _token_)
@@ -68,64 +70,68 @@ describe('GhostPaymentService', function () {
           expect(confirmation).to.exist;
         })
       });
+
+      it('should update a customer\'s default card', () => {
+        return service.setDefaultCard({ })
+      })
     });
     
-    describe('charges', () => {
+    // describe('charges', () => {
       
-      it('should create a charge', () => {
-        return service.createCharge({
-          amount: 10000,
-          currency: 'usd',
-          source: token.id,
-          description: 'Test Charge'
-        })
-        .then(charge => {
-          expect(charge).to.exist;
-          expect(charge.amount).to.equal(10000);
-          expect(charge.description).to.equal('Test Charge');
-        });
+    //   it('should create a charge', () => {
+    //     return service.createCharge({
+    //       amount: 10000,
+    //       currency: 'usd',
+    //       source: token.id,
+    //       description: 'Test Charge'
+    //     })
+    //     .then(charge => {
+    //       expect(charge).to.exist;
+    //       expect(charge.amount).to.equal(10000);
+    //       expect(charge.description).to.equal('Test Charge');
+    //     });
         
-      });
-    });
+    //   });
+    // });
     
-    describe('customers', () => {
+    // describe('customers', () => {
       
-      it('should create a customer', () => {
-        return service.createCustomer({ description: `Test Profile` })
-        .then(_customer_ => {
-          expect(_customer_).to.exist;
-          expect(_customer_.description).to.be.equal(`Test Profile`);
-        });
-      });
+    //   it('should create a customer', () => {
+    //     return service.createCustomer({ description: `Test Profile` })
+    //     .then(_customer_ => {
+    //       expect(_customer_).to.exist;
+    //       expect(_customer_.description).to.be.equal(`Test Profile`);
+    //     });
+    //   });
       
-      it('should get a customer', () => {
-        return service.getCustomer({ customerId: customer.id })
-        .then(_customer_ => {
-          expect(_customer_).to.exist;
-          expect(_customer_.id).to.be.equal(_customer_.id);
-        })
-      });
+    //   it('should get a customer', () => {
+    //     return service.getCustomer({ customerId: customer.id })
+    //     .then(_customer_ => {
+    //       expect(_customer_).to.exist;
+    //       expect(_customer_.id).to.be.equal(_customer_.id);
+    //     })
+    //   });
       
-      it('should update a customer', () => {
-        const customerCopy = {
-          customerId: customer.id,
-          email: customer.email,
-          description: 'changing the description'
-        };
-        return service.updateCustomer(customerCopy)
-        .then(_customer_ => {
-          expect(_customer_).to.exist;
-          expect(_customer_.description).to.equal(customerCopy.description);
-        })
-      });
+    //   it('should update a customer', () => {
+    //     const customerCopy = {
+    //       customerId: customer.id,
+    //       email: customer.email,
+    //       description: 'changing the description'
+    //     };
+    //     return service.updateCustomer(customerCopy)
+    //     .then(_customer_ => {
+    //       expect(_customer_).to.exist;
+    //       expect(_customer_.description).to.equal(customerCopy.description);
+    //     })
+    //   });
       
-      it('should delete a customer', () => {
-        return service.deleteCustomer({ customerId: customer.id })
-        .then(confirmation => {
-          expect(confirmation).to.exist;
-        })
-      });
-    });
+    //   it('should delete a customer', () => {
+    //     return service.deleteCustomer({ customerId: customer.id })
+    //     .then(confirmation => {
+    //       expect(confirmation).to.exist;
+    //     })
+    //   });
+    // });
     
   });
   

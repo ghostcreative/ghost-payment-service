@@ -1,3 +1,4 @@
-config/
+config/test.json
 .idea/
 node_modules/
+npm-debug.log
