@@ -1,0 +1,13 @@
+{
+	"authorizeNet": {
+		"apiLoginId": "-- YOUR API LOGIN ID HERE --",
+		"transactionKey": "-- YOUR TRANSACTION KEY HERE --",
+		"secretKey": "Simon",
+		"sandboxMode": true
+	},
+
+	"stripe": {
+		"publishKey": " -- YOUR PUBLISH KEY -- ",
+		"secretKey": "-- YOUR SECRET KEY --"
+	}
+}

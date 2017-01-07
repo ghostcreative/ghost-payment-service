@@ -24,6 +24,8 @@ describe('GhostPaymentService', function () {
       return stripeSetup.setupCustomer()
       .tap(_customer_ => customer = _customer_)
       .then(_customer_ => stripeSetup.setupCard({ customerId: _customer_.id }))
+      .then(() => stripeSetup.setupCard({ customerId: customer.id }))
+      .then(() => stripeSetup.setupCard({ customerId: customer.id }))
       .tap(_card_ => card = _card_)
       .then(_card_ => stripeSetup.setupToken())
       .tap(_token_ => token = _token_)
@@ -69,6 +71,14 @@ describe('GhostPaymentService', function () {
           expect(confirmation).to.exist;
         })
       });
+
+      it('should update a customer\'s default card', () => {
+        return service.setDefaultCard({ cardId: card.id, customerId: customer.id })
+        .then(customer => {
+          expect(customer).to.exist;
+          expect(customer.default_source).to.be.equal(card.id);
+        })
+      })
     });
     
     describe('charges', () => {
@@ -103,7 +113,7 @@ describe('GhostPaymentService', function () {
         return service.getCustomer({ customerId: customer.id })
         .then(_customer_ => {
           expect(_customer_).to.exist;
-          expect(_customer_.id).to.be.equal(_customer_.id);
+          expect(_customer_.id).to.be.equal(customer.id);
         })
       });
       
