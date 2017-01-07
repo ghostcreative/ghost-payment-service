@@ -206,6 +206,7 @@ describe('GhostPaymentService', function () {
       });
       
     });
+
     describe('refundTransaction', () => {
 
       it('should get a customers card', () => {
