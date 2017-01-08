@@ -4,7 +4,8 @@
   "description": "nodejs client to interact with the authorize.net & stripe apis",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha ./test --recursive"
+    "test": "NODE_ENV=test mocha ./test --recursive",
+    "test:grep": "NODE_ENV=test mocha ./test --grep"
   },
   "repository": {
     "type": "git",
