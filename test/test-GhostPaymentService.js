@@ -11,6 +11,7 @@ const GhostPaymentService = require('../index');
 const cardData = stripeSetup.generateCard();
 let card;
 let customer;
+let transaction;
 let token;
 let service;
 
@@ -18,24 +19,24 @@ describe('GhostPaymentService', function () {
   this.timeout(5000);
 
   describe('StripeService', () => {
-  
+
     before(() => {
-      return stripeSetup.setupCustomer()
-      .tap(_customer_ => customer = _customer_)
-      .then(_customer_ => stripeSetup.setupCard({ customerId: _customer_.id }))
-      .then(() => stripeSetup.setupCard({ customerId: customer.id }))
-      .then(() => stripeSetup.setupCard({ customerId: customer.id }))
-      .tap(_card_ => card = _card_)
-      .then(_card_ => stripeSetup.setupToken())
-      .tap(_token_ => token = _token_)
-      .then(() => service = new GhostPaymentService({
-        processor: 'stripe',
-        stripe: Config.get('stripe')
-      }))
-    });
-    
+     return stripeSetup.setupCustomer()
+     .tap(_customer_ => customer = _customer_)
+     .then(_customer_ => stripeSetup.setupCard({ customerId: _customer_.id }))
+     .then(() => stripeSetup.setupCard({ customerId: customer.id }))
+     .then(() => stripeSetup.setupCard({ customerId: customer.id }))
+     .tap(_card_ => card = _card_)
+     .then(_card_ => stripeSetup.setupToken())
+     .tap(_token_ => token = _token_)
+     .then(() => service = new GhostPaymentService({
+     processor: 'stripe',
+     stripe: Config.get('stripe')
+     }))
+     });
+
     describe('cards', () => {
-      
+
       it('should create a card', () => {
         return service.createCard({ card: cardData, customerId: customer.id })
         .then(_card_ => {
@@ -45,7 +46,7 @@ describe('GhostPaymentService', function () {
           expect(_card_.customer).to.be.equal(customer.id);
         })
       });
-      
+
       it('should get a customers card', () => {
         return service.getCard({ customerId: customer.id, cardId: card.id })
         .then(_card_ => {
@@ -54,7 +55,7 @@ describe('GhostPaymentService', function () {
           expect(_card_.id).to.be.eql(card.id);
         })
       });
-      
+
       it('should list a customers cards', () => {
         return service.getCards({ customerId: customer.id })
         .then(cards => {
@@ -63,7 +64,7 @@ describe('GhostPaymentService', function () {
           expect(cards.data).to.be.an('array');
         })
       });
-      
+
       it('should delete a card', () => {
         return service.deleteCard({ cardId: card.id, customerId: customer.id })
         .then(confirmation => {
@@ -79,9 +80,9 @@ describe('GhostPaymentService', function () {
         })
       })
     });
-    
+
     describe('charges', () => {
-      
+
       it('should create a charge', () => {
         return service.createCharge({
           amount: 10000,
@@ -94,12 +95,12 @@ describe('GhostPaymentService', function () {
           expect(charge.amount).to.equal(10000);
           expect(charge.description).to.equal('Test Charge');
         });
-        
+
       });
     });
-    
+
     describe('customers', () => {
-      
+
       it('should create a customer', () => {
         return service.createCustomer({ description: `Test Profile` })
         .then(_customer_ => {
@@ -107,7 +108,7 @@ describe('GhostPaymentService', function () {
           expect(_customer_.description).to.be.equal(`Test Profile`);
         });
       });
-      
+
       it('should get a customer', () => {
         return service.getCustomer({ customerId: customer.id })
         .then(_customer_ => {
@@ -115,7 +116,7 @@ describe('GhostPaymentService', function () {
           expect(_customer_.id).to.be.equal(customer.id);
         })
       });
-      
+
       it('should update a customer', () => {
         const customerCopy = {
           customerId: customer.id,
@@ -128,7 +129,7 @@ describe('GhostPaymentService', function () {
           expect(_customer_.description).to.equal(customerCopy.description);
         })
       });
-      
+
       it('should delete a customer', () => {
         return service.deleteCustomer({ customerId: customer.id })
         .then(confirmation => {
@@ -136,11 +137,11 @@ describe('GhostPaymentService', function () {
         })
       });
     });
-    
+
   });
-  
+
   describe('AuthorizeNetService', () => {
-  
+
     before(() => {
       return authorizeNetSetup.setupCustomer()
       .tap(_customer_ => customer = _customer_)
@@ -156,10 +157,16 @@ describe('GhostPaymentService', function () {
         processor: 'authorizeNet',
         authorizeNet: Config.get('authorizeNet')
       }))
+      .then(() => service.createCharge({
+        amount: 100,
+        customerId: customer.customerProfileId,
+        cardId: customer.paymentProfiles.customerPaymentProfileId
+      }))
+      .then(_transaction_ => transaction = _transaction_)
     });
-    
+
     describe('cards', () => {
-  
+
       it('should get a customers card', () => {
         return service.getCard({
           cardId: customer.paymentProfiles.customerPaymentProfileId,
@@ -173,7 +180,7 @@ describe('GhostPaymentService', function () {
           expect(_card_.customerPaymentProfileId).to.be.equal(customer.paymentProfiles.customerPaymentProfileId);
         })
       });
-  
+
       it('should list a customers cards', () => {
         return service.getCards({ customerId: customer.customerProfileId })
         .then(cards => {
@@ -188,7 +195,7 @@ describe('GhostPaymentService', function () {
           })
         })
       });
-  
+
       it('should create a card', () => {
         return service.createCard({
           card: cardData,
@@ -203,15 +210,31 @@ describe('GhostPaymentService', function () {
           expect(_card_.customerPaymentProfileId).to.be.exist;
         })
       });
-  
+
       it('should delete a card', () => {
         // TODO
       });
-      
+
     });
-  
+
+    describe('refundTransaction', () => {
+
+      it('should void transaction', () => {
+        return service.refundTransaction({
+          paymentId: transaction.transId,
+          amount: 100,
+          createdAt: transaction.createdAt
+        })
+        .then(_refund_ => {
+          expect(_refund_).to.exist;
+          expect(_refund_._original.messages[0].message[0].description[0]).to.be.equal('This transaction has been approved.');
+        })
+      });
+
+    });
+
     describe('charges', () => {
-    
+
       it('should create a charge', () => {
 
         return service.createCharge({
@@ -261,11 +284,11 @@ describe('GhostPaymentService', function () {
         .catch(err => expect(err).to.exist)
 
       });
-      
+
     });
-  
+
     describe('customers', () => {
-  
+
       it('should get a customer', () => {
         return service.getCustomer({ customerId: customer.customerProfileId })
         .then(_customer_ => {
@@ -273,7 +296,7 @@ describe('GhostPaymentService', function () {
           expect(_customer_.email).to.be.eql(customer.email);
         })
       });
-  
+
       it('should create a customer', () => {
         const newCustomer = {
           id: Chance.integer({ min: 1000, max: 1000000 }),
@@ -285,17 +308,17 @@ describe('GhostPaymentService', function () {
           expect(_customer_.email).to.be.eql(newCustomer.email);
         })
       });
-  
+
       it('should update a customer', () => {
-    
+
       });
-  
+
       it('should delete a customer', () => {
-    
+
       });
-      
+
     });
-    
+
   });
-  
+
 });
