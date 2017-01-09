@@ -136,6 +136,31 @@ describe('GhostPaymentService', function () {
         })
       });
     });
+
+    describe('plans', () => {
+
+      it('should create a plan', () => {
+        const id = Chance.natural({min: 10000000, max: 99999999});
+        const plan = {
+          amount: 10000,
+          id: id,
+          interval: "month",
+          name: "New Test Plan",
+          currency: "usd",
+          metadata: {
+            description: "This plan is a test."
+          },
+          trial_period_days: 1
+        };
+        return service.createPlan(plan)
+        .then(_plan_ => {
+          console.log('plan', _plan_);
+          expect(_plan_).to.exist;
+          expect(_plan_).id.to.be.equal(id);
+        })
+      })
+
+    })
     
   });
   
