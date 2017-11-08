@@ -4,10 +4,11 @@ const Chance = require('chance').Chance();
 const Config = require('config');
 const _ = require('lodash');
 const authorizeNetSetup = require('./helpers/authorizeNetSetup');
+const Promise = require('bluebird');
 
 const GhostPaymentService = require('../index');
 
-const cardData = stripeSetup.generateCard();
+const cardData = authorizeNetSetup.generateCard();
 let card;
 let customer;
 let transaction;
@@ -22,7 +23,7 @@ describe('GhostPaymentService', function () {
     before(() => {
       return Promise.resolve()
       .then(() => authorizeNetSetup.setupCustomer())
-      .tap(_customer_ => customer = _customer_)
+      .tap(_customer_ => { customer = _customer_; })
       .then(customer => authorizeNetSetup.setupCard({
         customerId: customer.customerProfileId,
         card: authorizeNetSetup.generateCard(),
@@ -72,6 +73,121 @@ describe('GhostPaymentService', function () {
             expect(card.customerPaymentProfileId).to.exist;
           });
         });
+      });
+
+      it('should delete a card', () => {
+        return service.deleteCard({
+          cardId: card.customerPaymentProfileId,
+          customerId: customer.customerProfileId
+        })
+        .then(response => {
+          expect(response).to.exist;
+        })
+      });
+
+    });
+
+    describe('createCard', () => {
+
+      it('should throw an error if customerId is missing', () => {
+        return service.createCard({
+          card: cardData,
+          billingAddress: authorizeNetSetup.generateAddress()
+        })
+        .catch(err => {
+          expect(err).to.equal('Missing customer Id.');
+        })
+      });
+
+      it('should throw an error if billing address is missing first name', () => {
+        return service.createCard({
+          card: cardData,
+          customerId: customer.customerProfileId,
+          billingAddress: _.omit(authorizeNetSetup.generateAddress(), ['firstName'])
+        })
+        .catch(err => {
+          expect(err).to.equal('Missing billing address first name.');
+        })
+      });
+
+      it('should throw an error if billing address is missing last name', () => {
+        return service.createCard({
+          card: cardData,
+          customerId: customer.customerProfileId,
+          billingAddress: _.omit(authorizeNetSetup.generateAddress(), ['lastName'])
+        })
+        .catch(err => {
+          expect(err).to.equal('Missing billing address last name.');
+        })
+      });
+
+      it('should throw an error if billing address is missing city', () => {
+        return service.createCard({
+          card: cardData,
+          customerId: customer.customerProfileId,
+          billingAddress: _.omit(authorizeNetSetup.generateAddress(), ['city'])
+        })
+        .catch(err => {
+          expect(err).to.equal('Missing billing address city.');
+        })
+      });
+
+      it('should throw an error if billing address is missing state', () => {
+        return service.createCard({
+          card: cardData,
+          customerId: customer.customerProfileId,
+          billingAddress: _.omit(authorizeNetSetup.generateAddress(), ['state'])
+        })
+        .catch(err => {
+          expect(err).to.equal('Missing billing address state.');
+        })
+      });
+
+      it('should throw an error if billing address is missing zip', () => {
+        return service.createCard({
+          card: cardData,
+          customerId: customer.customerProfileId,
+          billingAddress: _.omit(authorizeNetSetup.generateAddress(), ['zip'])
+        })
+        .catch(err => {
+          expect(err).to.equal('Missing billing address zip.');
+        })
+      });
+
+      it('should throw an error if card number is invalid', () => {
+        const invalidCard = _.assign(_.clone(cardData), { number: 'abc123' });
+        return service.createCard({
+          card: invalidCard,
+          customerId: customer.customerProfileId,
+          billingAddress: authorizeNetSetup.generateAddress()
+        })
+        .catch(err => {
+          expect(err).to.equal('Invalid credit card number.');
+        })
+      });
+
+      it('should throw an error if card expiration month is invalid', () => {
+        const invalidCard = _.assign(_.clone(cardData), { exp_month: '14' });
+        return service.createCard({
+          card: invalidCard,
+          customerId: customer.customerProfileId,
+          billingAddress: authorizeNetSetup.generateAddress()
+        })
+        .catch(err => {
+          expect(err).to.equal('Invalid expiration month.');
+        })
+      });
+
+      it('should throw an error if card expiration year is invalid', () => {
+        const invalidCard = _.assign(_.clone(cardData), { exp_year: '234' });
+        return service.createCard({
+          card: invalidCard,
+          customerId: customer.customerProfileId,
+          billingAddress: authorizeNetSetup.generateAddress()
+        })
+        .catch(err => {
+          expect(err).to.equal('Invalid expiration year.');
+        })
       });
 
       it('should create a card', () => {
