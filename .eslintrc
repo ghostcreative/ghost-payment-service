@@ -1,0 +1,38 @@
+{
+  "extends": "airbnb-base",
+  "parser": "babel-eslint",
+  "sourceType": "script",
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "env": {
+    "node": true,
+    "es6": true,
+    "mocha": true
+  },
+  "plugins": [
+    "mocha"
+  ],
+  "rules": {
+    "arrow-body-style": "off",
+    "arrow-parens": ["error", "as-needed"],
+    "comma-dangle": "off",
+    "func-names": "off",
+    "global-require": "off",
+    "import/newline-after-import": "off",
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/test-*.js"] }],
+    "indent": ["error", 2, { "SwitchCase": 1, "MemberExpression": 0 }],
+    "max-len": "off",
+    "mocha/no-exclusive-tests": "error",
+    "newline-per-chained-call": "error",
+    "no-else-return": "warn",
+    "no-multiple-empty-lines": ["error", { "max": 2, "maxBOF": 0, "maxEOF": 1 }],
+    "no-param-reassign": "warn",
+    "no-underscore-dangle": "off",
+    "no-unused-vars": "warn",
+    "padded-blocks": "off",
+    "prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
+    "quotes": ["error", "single", { "allowTemplateLiterals": true, "avoidEscape": true }],
+    "space-before-function-paren": "off"
+  }
+}
