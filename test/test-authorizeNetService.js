@@ -61,28 +61,17 @@ describe('GhostPaymentService', function () {
       });
 
       it('should list a customers cards', () => {
-        return service.getCards({ customerId: customer.customerProfileId })
+        return service.getCards(customer.customerProfileId)
         .then(cards => {
           expect(cards).to.exist;
           expect(cards).to.be.an('array');
           expect(cards.length).to.be.equal(1);
           cards.forEach(card => {
             expect(card).to.exist;
-            expect(card.customerType).to.be.equal('business');
             expect(card.billTo).to.exist;
             expect(card.customerPaymentProfileId).to.exist;
           });
         });
-      });
-
-      it('should delete a card', () => {
-        return service.deleteCard({
-          customerPaymentProfileId: card.customerPaymentProfileId,
-          customerProfileId: customer.customerProfileId
-        })
-        .then(response => {
-          expect(response).to.exist;
-        })
       });
 
     });
@@ -280,7 +269,7 @@ describe('GhostPaymentService', function () {
     describe('customers', () => {
 
       it('should get a customer', () => {
-        return service.getCustomer({ customerId: customer.customerProfileId })
+        return service.getCustomer(customer.customerProfileId)
         .then(_customer_ => {
           expect(_customer_).to.exist;
           expect(_customer_.email).to.be.eql(customer.email);
@@ -300,6 +289,20 @@ describe('GhostPaymentService', function () {
       });
 
 });
+
+    describe('deleteCard', () => {
+
+      it('should delete a card', () => {
+        return service.deleteCard({
+          customerPaymentProfileId: card.customerPaymentProfileId,
+          customerProfileId: customer.customerProfileId
+        })
+        .then(response => {
+          expect(response).to.exist;
+        })
+      });
+
+    });
 
 });
 
