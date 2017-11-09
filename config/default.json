@@ -1,10 +1,4 @@
 {
-//	"authorizeNet": {
-//		"apiLoginId": "-- YOUR API LOGIN ID HERE --",
-//		"transactionKey": "-- YOUR TRANSACTION KEY HERE --",
-//		"secretKey": "Simon",
-//		"sandboxMode": true
-//	},
 
 	"authorizeNet": {
       "apiLoginId": "7STzEsT97N",

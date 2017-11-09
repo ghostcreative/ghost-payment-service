@@ -77,8 +77,8 @@ describe('GhostPaymentService', function () {
 
       it('should delete a card', () => {
         return service.deleteCard({
-          cardId: card.customerPaymentProfileId,
-          customerId: customer.customerProfileId
+          customerPaymentProfileId: card.customerPaymentProfileId,
+          customerProfileId: customer.customerProfileId
         })
         .then(response => {
           expect(response).to.exist;
