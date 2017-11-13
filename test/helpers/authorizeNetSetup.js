@@ -86,7 +86,7 @@ class authorizeNetSetup {
         description: 'Id: ' + data.id,
         email: data.email || Chance.email()
       });
-  
+
       _authorizeCIM.createCustomerProfile({ customerProfile: Customer }, (err, response) => {
         if (err) reject(err);
         else {

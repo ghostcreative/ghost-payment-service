@@ -7,12 +7,10 @@ const authorizeNetSetup = require('./helpers/authorizeNetSetup');
 const Promise = require('bluebird');
 
 const GhostPaymentService = require('../index');
-
 const cardData = authorizeNetSetup.generateCard();
 let card;
 let customer;
 let transaction;
-let token;
 let service;
 
 describe('GhostPaymentService', function () {
@@ -48,8 +46,8 @@ describe('GhostPaymentService', function () {
 
       it('should get a customers card', () => {
         return service.getCard({
-          cardId: customer.paymentProfiles.customerPaymentProfileId,
-          customerId: customer.customerProfileId
+          customerPaymentProfileId: customer.paymentProfiles.customerPaymentProfileId,
+          customerProfileId: customer.customerProfileId
         })
         .then(_card_ => {
           expect(_card_).to.exist;
